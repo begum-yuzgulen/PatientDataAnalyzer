@@ -1,15 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Http;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace PatientDataAnalyzer
 {
@@ -21,8 +13,6 @@ namespace PatientDataAnalyzer
             InitializeComponent();
             dgPatients.DataContext = patients;
         }
-
-        public byte[] UserImage { get; set; }
 
         private string Format_Value(double value)
         {
@@ -45,9 +35,13 @@ namespace PatientDataAnalyzer
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            HttpClient httpClient = new HttpClient();
 
-            var labels = new List<string> { };
+            if (Patients.Count == 0)
+            {
+                MessageBox.Show("Please select at least one patient in order to generate a chart.");
+                return;
+            }
+            var labels = new List<String> { };
             if (WhiteCells.IsChecked == true) labels.Add("'" + WhiteCells.Content + "'");
             if (RedCells.IsChecked == true) labels.Add("'" + RedCells.Content + "'");
             if (Hemoglobin.IsChecked == true) labels.Add("'" + Hemoglobin.Content + "'");
@@ -72,16 +66,10 @@ namespace PatientDataAnalyzer
 
             var dataset = Format_Dataset(PatientValues);
             
-            PatientNames.Content = dataset;
-            var url_string = "https://quickchart.io/chart?c={type:'bar',data:{labels:[" + String.Join(",", labels) + "], datasets:[" + dataset + "]}}";
-            var response = httpClient.GetAsync(url_string).Result;
+            var chartType = ChartType.SelectedValue.ToString().ToLower();
+            chartWindow = new Chart(chartType, labels, dataset);
+            chartWindow.Show();
 
-            if (response.StatusCode != System.Net.HttpStatusCode.OK)
-            {
-                Console.WriteLine($"Failed req {response.StatusCode}");
-            }
-            UserImage = response.Content.ReadAsByteArrayAsync().Result;
-            DataContext = this;
         }
         public List<Patient> Patients { get; set; }
         public String patient_names { get; set; }
@@ -89,18 +77,20 @@ namespace PatientDataAnalyzer
         {
             MainWindow mw = new MainWindow();
             mw.Show();
+            chartWindow.Close();
             this.Close();
         }
+        public Chart chartWindow { get; set; }
 
         private void dgPatients_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             patient_names = "";
             Patients = new List<Patient> { };
-            for (int i = 0; i < dgPatients.SelectedItems.Count; i++)
+            int NrPatients = dgPatients.SelectedItems.Count;
+            for (int i = 0; i < NrPatients; i++)
             {
                 Patients.Add((Patient)dgPatients.SelectedItems[i]);
-                String name = ((Patient)dgPatients.SelectedItems[i]).Name;
-                patient_names += name;
+                patient_names = NrPatients + (NrPatients == 1 ? " patient" : " patients") + " selected";
             }
             PatientNames.Content = patient_names;
         }

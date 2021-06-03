@@ -1,22 +1,11 @@
 ﻿using ExcelMapper;
+using Firebase.Database;
 using System;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Xceed.Wpf.AvalonDock.Layout;
 
 namespace PatientDataAnalyzer
 {
@@ -25,8 +14,9 @@ namespace PatientDataAnalyzer
         public MainWindow()
         {
             InitializeComponent();
+            Connect_To_Database();
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
-
+            
             ChosenFile = "No file chosen...";
             DataContext = this;
         }
@@ -34,22 +24,10 @@ namespace PatientDataAnalyzer
         public void Button_Click(object sender, RoutedEventArgs e)
         {
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
-
-
-
-            // Set filter for file extension and default file extension 
             dlg.Filter = "Excel Files|*.xls;*.xlsx;*.xlsm";
-
-
-            // Display OpenFileDialog by calling ShowDialog method 
             Nullable<bool> result = dlg.ShowDialog();
-
-
-            // Get the selected file name and display in a TextBox 
             if (result == true)
             {
-                // Open document 
-
                 string filename = dlg.FileName;
                 SelectedFile.Text = filename;
                 try
@@ -70,13 +48,24 @@ namespace PatientDataAnalyzer
         }
         public string ChosenFile { get; set; }
         public Patient[] Patients { get; set; }
-
-
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             ChartForm mw = new ChartForm(Patients);
             mw.Show();
             this.Close();
         }
+
+        public class PatientData
+        {
+            public Dictionary<String, List<Patient>> Patients { get; set; }
+        }
+        private async void Connect_To_Database()
+        {
+            var firebase = new FirebaseClient("https://patientdataanalyzer-default-rtdb.europe-west1.firebasedatabase.app/");
+            var dinos = await firebase.Child("patient/0").OnceAsync<Patient>();
+
+            MessageBox.Show(dinos.ToString());
+        }
+
     }
 }

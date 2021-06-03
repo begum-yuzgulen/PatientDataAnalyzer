@@ -27,7 +27,7 @@
         </Grid.RowDefinitions>
         <StackPanel Margin="28,32,28,41" Grid.Row="0">
             <Label>Choose chart type:</Label>
-            <ComboBox Style="{DynamicResource MaterialDesignComboBox}">
+            <ComboBox Style="{DynamicResource MaterialDesignComboBox}" Name="ChartType" SelectedValuePath="Content">
                 <ComboBoxItem IsSelected="True">Bar</ComboBoxItem>
                 <ComboBoxItem>Line</ComboBoxItem>
                 <ComboBoxItem>Pie</ComboBoxItem>
@@ -36,9 +36,9 @@
         </StackPanel>
         <Label Grid.ColumnSpan="2" Margin="28,30,0,40" Grid.Column="1">Choose column(s):</Label>
         <StackPanel Grid.ColumnSpan="5" Orientation="Horizontal" Grid.Column="1" Margin="28,5,0,120">
-            <CheckBox Name="WhiteCells" Content="White Cells Count"/>
-            <CheckBox Name="RedCells" Content="Red Cells Count"/>
-            <CheckBox Name="Hemoglobin" Content="Hemoglobin"/>
+            <CheckBox Name="WhiteCells" Content="White Cells Count" IsChecked="True"/>
+            <CheckBox Name="RedCells" Content="Red Cells Count" IsChecked="True"/>
+            <CheckBox Name="Hemoglobin" Content="Hemoglobin" IsChecked="True"/>
             <CheckBox Name="Creatinin" Content="Creatinin"/>
             <CheckBox Name="Glucose" Content="Glucose"/>
             <CheckBox Name="Calcium" Content="Calcium"/>
@@ -60,7 +60,6 @@
 
         <Label Name="PatientNames" Content="No patients selected" Grid.ColumnSpan="2" Margin="10,10,147,-11" Grid.Row="2" />
         <Button Style="{DynamicResource MaterialDesignFlatAccentBgButton}" Grid.ColumnSpan="2" Margin="23,123,24,40" Grid.Row="2" Click="Button_Click" Grid.Column="1">Generate Chart</Button>
-        <Image Grid.Row="1" Grid.Column="2" Source="{Binding UserImage}" Grid.ColumnSpan="3" Margin="106,144,3,0" Grid.RowSpan="2" />
         <Button Margin="10,128,182,35" Grid.Row="2" Click="Button_Click_1">Back</Button>
     </Grid>
 </Window>
